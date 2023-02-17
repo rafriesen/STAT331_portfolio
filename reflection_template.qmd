@@ -11,7 +11,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an \_\_.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be a B.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from a Lab or Challenge assignment where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -23,24 +23,36 @@ execute:
 
 ```{r wd-1-csv}
 
+# Lab 5
+surveys <- read_csv(here('labs', 'lab_5', 'surveys.csv'))
 ```
 
 -   `xlsx`
 
 ```{r wd-1-xlsx}
 
+# Week 2 Practice Activity
+read_excel("Ages_Data/ages.xlsx")
 ```
 
 -   `txt`
 
 ```{r wd-1-txt}
-
+# Week 2 Practice Activity
+read_delim("Ages_Data/ages_tab.txt", delim = "\t")
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
 
-```{r wd-2}
+Lab 3 Challenge
 
+```{r wd-2}
+# Lab 3 Challenge
+challenge_1 <- hiphop |>
+  distinct(subj, .keep_all = TRUE) |>
+   select(subj:ethnic, intl:unclassifiable) |>
+  group_by(sex) |>
+  summarize(across(intl:unclassifiable, ~ mean(.x, na.rm = TRUE)))
 ```
 
 **WD-3: I can filter rows from a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -49,24 +61,40 @@ execute:
 
 ```{r wd-3-numeric}
 
+# Lab 3 Question 14
+hiphop_clean |> 
+  distinct(subj, .keep_all = TRUE) |> 
+  filter(sex == "Male", 
+         bieber == 5, 
+         city < 60000, 
+         ethnic == "white", 
+         age %in% 17:23) |>
+  select(subj)
 ```
 
 -   character -- specifically a string
 
 ```{r wd-3-string}
 
+# Practice Activity 5 Regex
+message |> 
+  filter(str_detect(Word, pattern = "^m"))
 ```
 
 -   factor
 
 ```{r wd-3-factor}
-
+# Couldn't find example
 ```
 
 -   date
 
 ```{r wd-3-date}
 
+# Practice Activity 5 Lubridate
+suspects <- suspects %>% 
+  mutate(iceland_time = with_tz(Time.Spotted, tzone = "UTC")) %>%
+  filter(pm(iceland_time))
 ```
 
 **WD-4: I can modify existing variables and create new variables in a dataframe for a *variety* of data types (e.g., numeric, integer, character, factor, date).**
@@ -75,24 +103,53 @@ execute:
 
 ```{r wd-4-numeric}
 
+# Lab 3 Question 11
+hiphop_clean <- hiphop_clean |> 
+  mutate(
+    across(
+      c(sex, ethnic),
+      as.character)) |>
+  mutate(
+    across(
+      c(age, familiarity),
+      as.numeric))
 ```
 
 -   character -- specifically a string
 
 ```{r wd-4-string}
 
+# Practice Activity 5 Regex Question 1
+message %>% 
+  mutate(length = str_length(Word)) %>% 
+  summarise(total_length = sum(length))
 ```
 
 -   factor
 
 ```{r wd-4-factor}
 
+# Lab 5 Question 3
+ggplot(data = surveys,
+       mapping = aes(
+         y = fct_collapse(day_of_week,
+                          "weekend" = c("Mon", "Tue", "Wed", "Thu", "Fri"),
+                          "weekday" = c("Sat", "Sun")))) +
+  geom_histogram(stat = "count") +
+  theme(axis.title.y = element_blank()) +
+  labs(title = "Number of Rodents Captured on Weekends vs. Weekdays",
+       )
 ```
 
 -   date
 
 ```{r wd-4-date}
 
+# Practice Activity 5 Lubridate
+
+suspects <- suspects %>%
+  mutate(day = day(Time.Spotted)) %>% 
+  filter(day %in% (c(22:24)))
 ```
 
 **WD-5: I can use mutating joins to combine multiple dataframes.**
@@ -101,24 +158,32 @@ execute:
 
 ```{r wd-5-left}
 
+# Couldn't find example from class
+# I have done these types of joins with my own project data
 ```
 
 -   `right_join()`
 
 ```{r wd-5-right}
 
+# Couldn't find example from class
+# I have done these types of joins with my own project data
 ```
 
 -   `inner_join()`
 
 ```{r wd-5-inner}
 
+# Preview activity 11
+inner_join(prof_info, prof_course)
 ```
 
 -   `full_join()`
 
 ```{r wd-5-full}
 
+# Preview activity 11
+full_join(prof_info, prof_course)
 ```
 
 **WD-6: I can use filtering joins to filter rows from a dataframe.**
@@ -127,12 +192,26 @@ execute:
 
 ```{r wd-6-semi}
 
+# Lab 4 Question 3
+avocado_clean %>% 
+  semi_join(y = regions_major, by = "region")  %>% 
+  filter(year == 2017,  type == "organic") %>% 
+  group_by(region) %>%
+  summarize(small_sum = sum(small)) %>% 
+  slice_max(order_by = small_sum, n = 1) %>% 
+  pull(region)
+
 ```
 
 -   `anti_join()`
 
 ```{r wd-6-anti}
 
+# Lab 4 Question 2
+regions_metro <- avocado_clean %>% 
+  anti_join(y = regions_all, by = "region") %>% 
+  select(region) %>%
+  unique()
 ```
 
 **WD-7: I can pivot dataframes from long to wide and visa versa**
@@ -141,12 +220,28 @@ execute:
 
 ```{r wd-7-long}
 
+# Lab 4 Question 7
+avocado_clean_Q7 <- avocado_clean_Q6 %>% 
+  pivot_longer(cols = small:extra_large, 
+               names_to = "size", 
+               values_to = "sales") %>%
+  mutate(size = factor(size, levels = c("small", "large", "extra_large"))) %>%
+  group_by(region, type, size) %>% 
+  summarize(mean_sales = mean(sales))
 ```
 
 -   `pivot_wider()`
 
 ```{r wd-7-wide}
 
+# Lab 4 Question 6
+avocado_clean_Q6 %>% 
+  group_by(region, type) %>%
+  summarize(MedPrice = median(AveragePrice))  %>% 
+  pivot_wider(names_from = type, values_from = MedPrice) %>% 
+  mutate(med_difference = organic - conventional) %>% 
+  ungroup() %>% 
+  slice_max(order_by = med_difference, n = 1)
 ```
 
 ## Reproducibility
@@ -161,12 +256,30 @@ I've done this in the following provided assignments:
 
 ```{r r-2-1}
 
+# Lab 4 Question 7
+
+# restructure the data and calculate mean sales per category
+avocado_clean_Q7 <- avocado_clean_Q6 %>% 
+  pivot_longer(cols = small:extra_large, 
+               names_to = "size", 
+               values_to = "sales") %>%
+  mutate(size = factor(size, levels = c("small", "large", "extra_large"))) %>%
+  group_by(region, type, size) %>% 
+  summarize(mean_sales = mean(sales))
 ```
 
 -   Example 2
 
 ```{r r-2-2}
 
+# Lab 4 Question 3
+avocado_clean %>% 
+  semi_join(y = regions_major, by = "region")  %>% 
+  filter(year == 2017,  type == "organic") %>% 
+  group_by(region) %>%
+  summarize(small_sum = sum(small)) %>% 
+  slice_max(order_by = small_sum, n = 1) %>% 
+  pull(region)
 ```
 
 **R-3: I can write robust programs that are resistant to changes in inputs.**
@@ -175,12 +288,28 @@ I've done this in the following provided assignments:
 
 ```{r r-3-1}
 
+# Lab 3 Question 11
+hiphop_clean <- hiphop_clean |> 
+  mutate(
+    across(
+      c(sex, ethnic),
+      as.character)) |>
+  mutate(
+    across(
+      c(age, familiarity),
+      as.numeric))
 ```
 
 -   Example 2
 
 ```{r r-3-2}
 
+# Lab 3 Question 5
+hiphop_clean <- hiphop |> 
+  mutate(
+    across(
+      intl:numOverallArtists,
+      as.factor)) 
 ```
 
 ## Data Visualization & Summarization
@@ -191,24 +320,71 @@ I've done this in the following provided assignments:
 
 ```{r dvs-1-num}
 
+# Lab 4 Question 6
+ggplot(data = avocado_clean_Q6, 
+       mapping = aes(x = type,
+                     y = AveragePrice,
+                     color = type)) +
+  geom_jitter(color = "gray", alpha = .5) +
+  geom_boxplot(outlier.shape = NA, alpha = .5) +
+  facet_grid(~ region) +
+  theme(legend.position = "none") +
+  labs(title = "Avocado Price Comparision in California Cities",
+       x = "Avocado Type",
+       y = "Average Price per Avocado ($)")
 ```
 
 -   numeric variables and categorical variables
 
 ```{r dvs-2-num-cat}
 
+# Lab 4 Question 7
+ggplot(data = avocado_clean_Q7, 
+       mapping = aes(x = region,
+                     y = mean_sales,
+                     fill = size)) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap(~ type) +
+  labs(x = "Region of CA", 
+       y = "Proportion of Mean Avocados Sold",
+       fill = "Avocado Size") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_fill_manual(values = c("lightblue2", "steelblue3", "darkolivegreen3"),
+                    labels = c("Small", "Large", "Extra Large"))
 ```
 
 -   categorical variables
 
 ```{r dvs-2-cat}
 
+# Lab 5 Question 3
+ggplot(data = surveys,
+       mapping = aes(
+         y = factor(day_of_week, levels = days_levels))) +
+  geom_histogram(stat = "count") +
+  theme(axis.title.y = element_blank()) +
+  labs(title = "Number of Rodents Captured on Each Day of the Week ")
 ```
 
 -   dates
 
 ```{r dvs-2-date}
 
+# Lab 5 Question 2
+surveys |> 
+  group_by(genus, year) |> 
+  summarize(mean_weight = mean(weight)) |>
+  ungroup()  |>
+ggplot(mapping = aes(x = year,
+                  y = mean_weight,
+                  color = fct_reorder(.f = genus, 
+                                      .x = mean_weight, 
+                                      .desc = TRUE ))) +
+  geom_line() +
+  scale_color_discrete(name = "Rodent Genus") +
+  theme(axis.title.y = element_blank()) +
+  labs(title = "Average Rodent Weight (in grams) Over Time",
+       x = "Year")
 ```
 
 **DVS-2: I use plot modifications to make my visualization clear to the reader.**
@@ -217,12 +393,32 @@ I've done this in the following provided assignments:
 
 ```{r dvs-2-1}
 
+# Lab 5 Question 3
+ggplot(data = surveys,
+       mapping = aes(
+         y = factor(day_of_week, levels = days_levels))) +
+  geom_histogram(stat = "count") +
+  theme(axis.title.y = element_blank()) +
+  labs(title = "Number of Rodents Captured on Each Day of the Week ",
+       )
 ```
 
 -   Example 2
 
 ```{r dvs-2-2}
 
+# Lab 5 Question 1
+ggplot(data = surveys,
+       mapping = aes(x = weight, 
+                      y = fct_reorder(
+                        .f = species, 
+                        .x = weight, 
+                        .fun = 'median'))) +  
+        geom_jitter(color = "darkseagreen", alpha = .2) +
+        geom_boxplot(outlier.shape = NA) +
+        labs(x = "Weight (g)",
+             title = "Rodent Species Weights") +
+  theme(axis.title.y = element_blank())
 ```
 
 **DVS-3: I show creativity in my visualizations**
@@ -230,13 +426,40 @@ I've done this in the following provided assignments:
 -   Example 1
 
 ```{r dvs-3-1}
-
+# Lab 4 Question 7
+ggplot(data = avocado_clean_Q7, 
+       mapping = aes(x = region,
+                     y = mean_sales,
+                     fill = size)) +
+  geom_bar(position = "fill", stat = "identity") +
+  facet_wrap(~ type) +
+  labs(x = "Region of CA", 
+       y = "Proportion of Mean Avocados Sold",
+       fill = "Avocado Size") +
+  scale_x_discrete(guide = guide_axis(n.dodge = 2)) +
+  scale_fill_manual(values = c("lightblue2", "steelblue3", "darkolivegreen3"),
+                    labels = c("Small", "Large", "Extra Large"))
 ```
 
 -   Example 2
 
 ```{r dvs-3-2}
 
+# Lab 4 Challenge
+# Revised version -- switched to Cleveland dot plot per your advice!
+
+# plot data
+# source: https://uc-r.github.io/cleveland-dot-plots
+ggplot(data = avocado_clean_chal,
+       mapping = aes(y = region,
+                     x = value)) +
+  geom_line(aes(group = region)) +
+  geom_point(aes(color = cost_type)) +
+  labs(title = "Avocado Toast Did Not Eat My Mortgage",
+       x = "Cost ($)",
+       y = "",
+       fill = "") +
+  scale_color_manual(values = c("darkolivegreen3", "steelblue3"))
 ```
 
 **DVS-4: I can calculate numerical summaries of variables.**
@@ -245,12 +468,22 @@ I've done this in the following provided assignments:
 
 ```{r dvs-4-1}
 
+# Lab 3 Question 11
+hiphop_clean |> 
+  filter(age < 20) |> 
+  group_by(word) |> 
+  summarize(mean = mean(familiarity)) |> 
+  slice_max(order_by = mean, n = 5) 
 ```
 
 -   Example 2
 
 ```{r dvs-4-2}
 
+#Lab 3 Question 6
+hiphop_clean |>
+  distinct(word) |>
+  count()
 ```
 
 **DVS-5: I can find summaries of variables across multiple groups.**
@@ -259,12 +492,28 @@ I've done this in the following provided assignments:
 
 ```{r dvs-5-1}
 
+# Lab 4 Question 6
+avocado_clean_Q6 %>% 
+  group_by(region, type) %>%
+  summarize(MedPrice = median(AveragePrice))  %>% 
+  pivot_wider(names_from = type, values_from = MedPrice) %>% 
+  mutate(med_difference = organic - conventional) %>% 
+  ungroup() %>% 
+  slice_max(order_by = med_difference, n = 1)
 ```
 
 -   Example 2
 
 ```{r dvs-5-2}
 
+# Lab 4 Question 6
+avocado_clean_Q6 %>% 
+  group_by(region, type) %>%
+  summarize(AveragePrice = mean(AveragePrice))  %>% 
+  pivot_wider(names_from = type, values_from = AveragePrice) %>% 
+  mutate(avg_difference = organic - conventional) %>% 
+  ungroup() %>% 
+  slice_max(order_by = avg_difference, n = 1)
 ```
 
 **DVS-6: I can create tables which make my summaries clear to the reader.**
@@ -273,12 +522,26 @@ I've done this in the following provided assignments:
 
 ```{r dvs-6-1}
 
+# Lab 3 Question 9
+
+# Look into sex ratio of participants
+hiphop_clean |> 
+  mutate(sex = as.factor(sex)) |>
+         distinct(subj, .keep_all = TRUE) |> 
+ select(sex) |> 
+  summary()
+
 ```
 
 -   Example 2
 
 ```{r dvs-6-2}
 
+# Lab 3 Question 9
+hiphop_clean |> 
+         distinct(subj, .keep_all = TRUE) |> 
+ select(ethnic) |> 
+  summary()
 ```
 
 **DVS-7: I show creativity in my tables.**
@@ -287,12 +550,28 @@ I've done this in the following provided assignments:
 
 ```{r dvs-7-1}
 
+# Lab 4 Question 4
+avocado_clean %>% 
+  separate(col = "Date", sep = "-", into = c("year", "month", "date")) %>%
+  group_by(month) %>% 
+  summarise(mean = mean(`total_volume`)) %>%
+  slice_max(order_by = mean)
 ```
 
 -   Example 2
 
 ```{r dvs-7-2}
 
+# Lab 4 Question 6
+
+# find the median price difference
+avocado_clean_Q6 %>% 
+  group_by(region, type) %>%
+  summarize(MedPrice = median(AveragePrice))  %>% 
+  pivot_wider(names_from = type, values_from = MedPrice) %>% 
+  mutate(med_difference = organic - conventional) %>% 
+  ungroup() %>% 
+  slice_max(order_by = med_difference, n = 1)
 ```
 
 ## Program Efficiency
@@ -303,12 +582,28 @@ I've done this in the following provided assignments:
 
 ```{r pe-1-one-call}
 
+# Lab 4 Question 2
+avocado_clean <- avocado %>% 
+  rename(small = "4046", 
+         large = "4225",
+         extra_large = "4770",
+         total_volume = "Total Volume")
 ```
 
 -   `across()`
 
 ```{r pe-1-across}
 
+# Lab 3 Question 11
+hiphop_clean <- hiphop_clean |> 
+  mutate(
+    across(
+      c(sex, ethnic),
+      as.character)) |>
+  mutate(
+    across(
+      c(age, familiarity),
+      as.numeric))
 ```
 
 -   `map()` functions
@@ -355,12 +650,26 @@ I've done this in the following provided assignments:
 
 ```{r pe-4-1}
 
+# Lab 3 Challenge
+challenge_1 <- hiphop |>
+  distinct(subj, .keep_all = TRUE) |>
+   select(subj:ethnic, intl:unclassifiable) |>
+  group_by(sex) |>
+  summarize(across(intl:unclassifiable, ~ mean(.x, na.rm = TRUE)))
 ```
 
 -   Example 2
 
 ```{r pe-4-2}
 
+# Lab 4 Question 6
+avocado_clean_Q6 %>% 
+  group_by(region, type) %>%
+  summarize(MedPrice = median(AveragePrice))  %>% 
+  pivot_wider(names_from = type, values_from = MedPrice) %>% 
+  mutate(med_difference = organic - conventional) %>% 
+  ungroup() %>% 
+  slice_max(order_by = med_difference, n = 1)
 ```
 
 ## Data Simulation & Modeling
@@ -395,12 +704,12 @@ I've done this in the following provided assignments:
 
 ## Revising My Thinking
 
-<!-- How did you revise your thinking throughout the course? How did you revise your thinking on the code examples you have provided in your portfolio? -->
+I have completed two revisions so far in the quarter and have tried to incorporate "lessons learned" as I work on successive assignments throughout the quarter. I incorporated feedback and updated the Challenge 4 plot so that it is now a Cleveland Dot Plot instead of a bar plot.
 
 ## Extending My Thinking
 
-<!-- How did you extended your thinking throughout the course? How did you extend your thinking on the code examples you have provided in your portfolio? -->
+I extended my thinking by looking up external resources for Challenge 4 and creatively framing my analysis. I have been applying what I've been learning as I clean up data for my research project and a side volunteer project.
 
 ## Peer Support & Collaboration
 
-<!-- Include an image of feedback you gave that you are proud of (either in a peer review or in Discord) -->
+![](images/Screenshot%202023-02-16%20at%2010.06.39%20AM.png){width="170"}
