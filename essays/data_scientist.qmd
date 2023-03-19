@@ -3,3 +3,9 @@ title: "My Growth as a Data Scientist"
 format: html
 editor: visual
 ---
+
+I came into this class with some basic knowledge of R. I have previously worked for the National Park Service as a field biologist. During the pandemic, I was assigned the task of updating existing scripts and writing new scripts to analyze vegetation monitoring data. I taught myself the basics of using R through some online tutorials and a lot of Google-ing and seeing examples on StackOverflow. Haven now taken this class, I see how ramshackle and cobbled together my prior R knowledge was. I found it invaluable to start from the foundations and fill in the gaps in my understanding of R. I appreciated learning the difference between base R and the Tidyverse and plan to err on side of using Tidyverse when possible.
+
+In taking this class, I wanted to learn skills that reduce code redundancy. I am excited to write functions and use iterations in the code I use for my research and already have started to make these changes. This will vastly cut down on the length of some of my existing scripts and make them easier to edit in the future. These skills will also decrease the likelihood of having errors in my code. Lab 8 shows my ability to write functions.
+
+I also hoped to learn ways to make my code easier to read and usable by others. I want the code that I write to be tidy and easy to understand. I found that learning the proper syntax and formatting guidelines was really helpful. Previously, I would auto-wrap my script. Now I have a better idea about how long lines should be and purposefully insert paragraph breaks. I also learned about using R projects and the "Here" package through this class. These two things will greatly improve my workflow and make sharing scripts with collaborators a lot easier. I believe some of the later labs, such as Lab 8 and 9 show my progress in both of these regards.

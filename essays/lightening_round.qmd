@@ -3,3 +3,23 @@ title: "Lightening Round Essays"
 format: html
 editor: visual
 ---
+
+-   Finish the sentence with another student's name:
+
+    "If Erin doesn't earn an A, then nobody should, because she has a creative approach to coding."
+
+-   What was the most difficult part of the class for you? List a general topic, a specific problem, a kind of work we did, etc. and explain why.
+
+    I wish we had more time to cover iterations. I still have a hard time wrapping my head around how they work and feel like I would have a hard time writing my own iterations for my project. I trust with more time and practice, they will make more sense.
+
+-   What was the easiest part of the class for you? Explain why.
+
+    Cleaning up data was the easiest part for me because I had some prior knowledge. I was already familiar with a lot of the dplyr functions and this familiarity made the first couple weeks less overwhelming.
+
+-   What part of the class surprised or interested you the most? Explain why.
+
+    I really enjoyed learning about formatting tables. This isn't something I have ever done before and I anticipate using this skills to make tables for publications.
+
+-   Give one piece of advice to a student just beginning a quarter of STAT 331 that will help them be successful in learning.
+
+    Get ready to devote a lot of time to working on assignments for this class. In the end, you will learn a lot and it will be rewarding!

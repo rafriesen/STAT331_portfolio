@@ -11,7 +11,7 @@ execute:
   echo: true
 ---
 
-[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be a B.
+[**My Grade:**]{.underline} I believe my grade equivalent to course work evidenced below to be an A.
 
 [**Learning Objective Evidence:**]{.underline} In the code chunks below, provide code from a Lab or Challenge assignment where you believe you have demonstrated proficiency with the specified learning target. Be sure to specify **where** the code came from (e.g., Lab 4 Question 2).
 
@@ -30,9 +30,10 @@ surveys <- read_csv(here('labs', 'lab_5', 'surveys.csv'))
 -   `xlsx`
 
 ```{r wd-1-xlsx}
+# Revised - switched to xlsx instead of read_excel()
 
 # Week 2 Practice Activity
-read_excel("Ages_Data/ages.xlsx")
+read_xlsx("Ages_Data/ages.xlsx")
 ```
 
 -   `txt`
@@ -84,7 +85,16 @@ message |>
 -   factor
 
 ```{r wd-3-factor}
-# Couldn't find example
+
+# Lab 3 Question 14
+hiphop_clean |> 
+  distinct(subj, .keep_all = TRUE) |> 
+  filter(sex == "Male", 
+         bieber == 5, 
+         city < 60000, 
+         ethnic == "white", 
+         age %in% 17:23) |>
+  select(subj)
 ```
 
 -   date
@@ -119,10 +129,10 @@ hiphop_clean <- hiphop_clean |>
 
 ```{r wd-4-string}
 
-# Practice Activity 5 Regex Question 1
-message %>% 
-  mutate(length = str_length(Word)) %>% 
-  summarise(total_length = sum(length))
+# Lab 7, Question 2.2
+missing_data <- surveys |> 
+  filter(is.na(weight)) |> 
+  mutate(section_trip = str_c(section,' ', trip))
 ```
 
 -   factor
@@ -146,7 +156,6 @@ ggplot(data = surveys,
 ```{r wd-4-date}
 
 # Practice Activity 5 Lubridate
-
 suspects <- suspects %>%
   mutate(day = day(Time.Spotted)) %>% 
   filter(day %in% (c(22:24)))
@@ -158,16 +167,35 @@ suspects <- suspects %>%
 
 ```{r wd-5-left}
 
-# Couldn't find example from class
-# I have done these types of joins with my own project data
+# Example from volunteer data management side project
+summarize_event <- function(file, matrix) {
+  
+file <- file |> 
+  mutate(date = openxlsx::convertToDate(date)) |> 
+  drop_na(source_type) |> 
+  pivot_longer(cols = (!(source_type:unk_num)),
+               values_to = "member",
+               values_drop_na = TRUE) |> 
+  clean_name(member) |> 
+  semi_join(matrix, by = "first_last") |> 
+  left_join(master_relations, by = "first_last", multiple = "first") |> 
+  select(first_last, member, Family, source_type:file_name) |> 
+  group_by(event_detail, date) |> 
+  count(Family)
+
+return(file)
+}
 ```
 
 -   `right_join()`
 
 ```{r wd-5-right}
 
-# Couldn't find example from class
-# I have done these types of joins with my own project data
+# Example from volunteer data management side project
+matrix_1984_fill <- file_1984_clean |> 
+  right_join(matrix_1984, by = "first_last") |> 
+  mutate(total = rowSums(across(where(is.numeric)), na.rm=TRUE)) |> 
+  select(first_last, member, total, everything())
 ```
 
 -   `inner_join()`
@@ -248,7 +276,9 @@ avocado_clean_Q6 %>%
 
 **R-1: I can create professional looking, reproducible analyses using RStudio projects, Quarto documents, and the here package.**
 
-I've done this in the following provided assignments:
+I've done this in the following provided assignment:
+
+Lab 7 and Lab 8
 
 **R-2: I can write well documented and tidy code.**
 
@@ -257,8 +287,6 @@ I've done this in the following provided assignments:
 ```{r r-2-1}
 
 # Lab 4 Question 7
-
-# restructure the data and calculate mean sales per category
 avocado_clean_Q7 <- avocado_clean_Q6 %>% 
   pivot_longer(cols = small:extra_large, 
                names_to = "size", 
@@ -304,12 +332,18 @@ hiphop_clean <- hiphop_clean |>
 
 ```{r r-3-2}
 
-# Lab 3 Question 5
-hiphop_clean <- hiphop |> 
-  mutate(
-    across(
-      intl:numOverallArtists,
-      as.factor)) 
+# Lab 7 Question 3.1
+rescale_01 <- function(x) {
+    
+  stopifnot(is.numeric(x),
+            length(x) > 1)
+  
+  rng <- range(x, na.rm = TRUE)
+  num <- (x - rng[1])
+  denom <- (rng[2] - rng[1])
+  
+  return(num/denom)
+}
 ```
 
 ## Data Visualization & Summarization
@@ -320,18 +354,11 @@ hiphop_clean <- hiphop |>
 
 ```{r dvs-1-num}
 
-# Lab 4 Question 6
-ggplot(data = avocado_clean_Q6, 
-       mapping = aes(x = type,
-                     y = AveragePrice,
-                     color = type)) +
-  geom_jitter(color = "gray", alpha = .5) +
-  geom_boxplot(outlier.shape = NA, alpha = .5) +
-  facet_grid(~ region) +
-  theme(legend.position = "none") +
-  labs(title = "Avocado Price Comparision in California Cities",
-       x = "Avocado Type",
-       y = "Average Price per Avocado ($)")
+# Lab 2 Question 4
+ ggplot(data = surveys, 
+        mapping = aes(x = weight, 
+                      y = hindfoot_length)) +  
+        geom_point()
 ```
 
 -   numeric variables and categorical variables
@@ -357,13 +384,14 @@ ggplot(data = avocado_clean_Q7,
 
 ```{r dvs-2-cat}
 
-# Lab 5 Question 3
-ggplot(data = surveys,
-       mapping = aes(
-         y = factor(day_of_week, levels = days_levels))) +
-  geom_histogram(stat = "count") +
-  theme(axis.title.y = element_blank()) +
-  labs(title = "Number of Rodents Captured on Each Day of the Week ")
+# Lab 7 Question 2.2
+ggplot(data = missing_data,
+       mapping = aes(x = year, fill = section_trip)) +
+  geom_bar() +
+  labs(title = "Count of missing fish weight data", 
+       y = "", 
+       x = "Year", 
+       fill = "River Section and Trip")
 ```
 
 -   dates
@@ -393,32 +421,38 @@ ggplot(mapping = aes(x = year,
 
 ```{r dvs-2-1}
 
-# Lab 5 Question 3
+# Lab 5 Question 1
+
+# Revised 3/19/2022 - Modified transparency and fixed axes labels
 ggplot(data = surveys,
-       mapping = aes(
-         y = factor(day_of_week, levels = days_levels))) +
-  geom_histogram(stat = "count") +
-  theme(axis.title.y = element_blank()) +
-  labs(title = "Number of Rodents Captured on Each Day of the Week ",
-       )
+       mapping = aes(x = weight, 
+                      y = fct_reorder(
+                        .f = species, 
+                        .x = weight, 
+                        .fun = 'median',
+                        ))) +  
+        geom_jitter(color = "darkseagreen", alpha = .1) +
+        geom_boxplot(outlier.shape = NA, alpha = 0) +
+        labs(x = "Weight (g)",
+             title = "Rodent Species Weights",
+             y = "")
 ```
 
 -   Example 2
 
 ```{r dvs-2-2}
 
-# Lab 5 Question 1
+# Lab 5 Question 3
+
+# Revised 3/19/2022 Fixed axis labels, switched to geom_bar
 ggplot(data = surveys,
-       mapping = aes(x = weight, 
-                      y = fct_reorder(
-                        .f = species, 
-                        .x = weight, 
-                        .fun = 'median'))) +  
-        geom_jitter(color = "darkseagreen", alpha = .2) +
-        geom_boxplot(outlier.shape = NA) +
-        labs(x = "Weight (g)",
-             title = "Rodent Species Weights") +
-  theme(axis.title.y = element_blank())
+       mapping = aes(
+         y = fct_collapse(day_of_week,
+                          "weekend" = c("Mon", "Tue", "Wed", "Thu", "Fri"),
+                          "weekday" = c("Sat", "Sun")))) +
+  geom_bar() +
+  labs(title = "Number of Rodents Captured on Weekends vs. Weekdays",
+       y = "")
 ```
 
 **DVS-3: I show creativity in my visualizations**
@@ -426,6 +460,7 @@ ggplot(data = surveys,
 -   Example 1
 
 ```{r dvs-3-1}
+
 # Lab 4 Question 7
 ggplot(data = avocado_clean_Q7, 
        mapping = aes(x = region,
@@ -448,7 +483,6 @@ ggplot(data = avocado_clean_Q7,
 # Lab 4 Challenge
 # Revised version -- switched to Cleveland dot plot per your advice!
 
-# plot data
 # source: https://uc-r.github.io/cleveland-dot-plots
 ggplot(data = avocado_clean_chal,
        mapping = aes(y = region,
@@ -506,14 +540,14 @@ avocado_clean_Q6 %>%
 
 ```{r dvs-5-2}
 
-# Lab 4 Question 6
-avocado_clean_Q6 %>% 
-  group_by(region, type) %>%
-  summarize(AveragePrice = mean(AveragePrice))  %>% 
-  pivot_wider(names_from = type, values_from = AveragePrice) %>% 
-  mutate(avg_difference = organic - conventional) %>% 
-  ungroup() %>% 
-  slice_max(order_by = avg_difference, n = 1)
+# Lab 9 Summarize Allisons
+allison |> 
+  group_by(State, Sex) |> 
+  summarize(Count = sum(Count)) |>
+  ungroup() |> 
+  pivot_wider(names_from = Sex,
+              values_from = Count,
+              values_fill = 0)
 ```
 
 **DVS-6: I can create tables which make my summaries clear to the reader.**
@@ -522,14 +556,9 @@ avocado_clean_Q6 %>%
 
 ```{r dvs-6-1}
 
-# Lab 3 Question 9
-
-# Look into sex ratio of participants
-hiphop_clean |> 
-  mutate(sex = as.factor(sex)) |>
-         distinct(subj, .keep_all = TRUE) |> 
- select(sex) |> 
-  summary()
+# Lab 9 Challenge Create Data Preview
+# interactive preview with DT
+DT::datatable(names)
 
 ```
 
@@ -537,11 +566,24 @@ hiphop_clean |>
 
 ```{r dvs-6-2}
 
-# Lab 3 Question 9
-hiphop_clean |> 
-         distinct(subj, .keep_all = TRUE) |> 
- select(ethnic) |> 
-  summary()
+# Lab 9 Challenge Allan Table
+
+allan_m |> 
+  filter(Year == 2000,
+         State %in% c("CA", "PA")) |>
+  group_by(State) |> 
+  mutate(prop = Count / sum(Count)) |> 
+  select(-c(Year, Sex, Count)) |> 
+  pivot_wider(names_from = Name,
+              values_from = prop,
+              values_fill = 0) |>
+  ungroup() |> 
+  gt() |> 
+  tab_header(title = "Percent of Babies Named 'Alan'",
+             subtitle = "Comparing California and Pennsylvania") |> 
+  fmt_percent(columns = 2:4, decimals = 2) |> 
+  opt_align_table_header(align = c("left"))  |> 
+  cols_width(everything()~ px(100))
 ```
 
 **DVS-7: I show creativity in my tables.**
@@ -562,16 +604,21 @@ avocado_clean %>%
 
 ```{r dvs-7-2}
 
-# Lab 4 Question 6
+# Lab 9 Challenge Summarize the Number of Allisons
 
-# find the median price difference
-avocado_clean_Q6 %>% 
-  group_by(region, type) %>%
-  summarize(MedPrice = median(AveragePrice))  %>% 
-  pivot_wider(names_from = type, values_from = MedPrice) %>% 
-  mutate(med_difference = organic - conventional) %>% 
-  ungroup() %>% 
-  slice_max(order_by = med_difference, n = 1)
+allison |> 
+  group_by(State, Sex) |> 
+  summarize(Count = sum(Count)) |>
+  ungroup() |> 
+  pivot_wider(names_from = Sex,
+              values_from = Count,
+              values_fill = 0) |> 
+  gt() |> 
+  cols_label(F = "Female",
+             M = "Male") |> 
+  tab_header(title = "Frequency of Babies Named 'Allison' by U.S. State") |> 
+  opt_align_table_header(align = c("left")) |> 
+  cols_width(everything()~ px(100))
 ```
 
 ## Program Efficiency
@@ -610,6 +657,17 @@ hiphop_clean <- hiphop_clean |>
 
 ```{r pe-1-map-1}
 
+# Lab 8 Sing the Whole Song
+xmas_song <- function(n){
+  song <- map_chr(.x = 1:12,
+                  .f = ~ sing_day(xmas2, .x, Full.Phrase)) 
+  
+  song <-glue::glue("{song}")
+    
+  return(song)
+}
+
+xmas_song(xmas2)
 ```
 
 **PE-2: I can write functions to reduce repetition in my code.**
@@ -618,12 +676,70 @@ hiphop_clean <- hiphop_clean |>
 
 ```{r pe2-1}
 
+# Lab 8 Sing a Line for One Day
+sing_day <- function(dataset, line, phrase_col){
+  
+# Setup the intro line
+# Challenge Option 2 - New Lines for Gifts
+  num_word <- ordinal(line)
+  
+  intro <- glue::glue("On the {num_word} day of Christmas, my true love gave to me:
+                      
+                      ")
+  
+# Sing the gift phrases
+phrases <- dataset |>
+  pull( {{phrase_col}} )
+
+# Challenge Option 2 - New Lines for Gifts  
+phrases <- str_c(phrases, "\n")
+
+# Add "and" for all lines except the 1st line
+phrases[1] <- if_else(line == 1,
+                 true =  phrases[1],
+                 false = str_c("and ", phrases[1]))
+
+# reverse order and collapse string into length one
+phrases <- phrases [1:line] |> 
+  rev() |> 
+  str_flatten()
+
+## put it together
+ return(glue::glue("{intro} {phrases}
+                  "))
+
+}  
 ```
 
 -   Example 2
 
 ```{r pe2-2}
 
+# Lab 8 Sing Phrases
+make_phrase <- function(day, num_word, item, verb, adjective, location) {
+  
+## Step 1: Replace NAs with blank strings
+  verb <- str_replace_na(verb, '')
+  adjective <- str_replace_na(adjective, '')
+  location <- str_replace_na(location, '')
+  
+  ## Step 2: If the day is larger than 1, the items need pluralized! 
+  item <- if_else(condition = day > 1,
+                 true = pluralize_gift(item),
+                 false = item)
+  
+  ## Step 3: If the day is 1, you need to add an "a" or "an" before the gift 
+  num_word <- if_else(condition = day == 1,
+                 true = str_replace(num_word, 'one', 'a'),
+                 false = num_word)
+  
+  ## Step 4: Glue all of the pieces together to make a phrase! 
+ return(
+   glue::glue(
+   {num_word},' ', {adjective},' ', {item},' ', {verb}, ' ', {location}
+   )
+ )
+}
 ```
 
 **PE-3:I can use iteration to reduce repetition in my code.**
@@ -632,16 +748,41 @@ hiphop_clean <- hiphop_clean |>
 
 ```{r pe-3-across}
 
+# Lab 7 Question 2.1
+surveys |> 
+  summarise(across(.cols = trip:species, 
+                   ~ sum(is.na(.x))
+                   ))
 ```
 
 -   `map()` functions (Provide 2 Examples)
 
 ```{r pe-3-map-1}
 
+# Lab 8 Sing Phrases
+xmas2 <- xmas %>%
+  mutate(Full.Phrase = pmap_chr(.l = list(Day, Number, Gift.Item, Verb, Adjective, Location),
+                                .f = make_phrase),
+         Full.Phrase = str_squish(Full.Phrase)
+         )
 ```
 
 ```{r pe-3-map-2}
 
+# Lab 8 Sing the Whole Song
+xmas_song <- function(n){
+  song <- map_chr(.x = 1:12,
+                  .f = ~ sing_day(xmas2, .x, Full.Phrase)) 
+  
+  song <-glue::glue("{song}")
+    
+    
+    
+  
+  return(song)
+}
+
+xmas_song(xmas2) 
 ```
 
 **PE-4: I can use modern tools when carrying out my analysis.**
@@ -680,12 +821,34 @@ avocado_clean_Q6 %>%
 
 ```{r dsm-1-1}
 
+# Practice Activity 9.2 
+fake_data <- tibble(
+  weight = rnorm(n = 100, mean = 4.6, sd = .8)
+)
 ```
 
 -   Example 2
 
 ```{r dsm-1-2}
 
+# Practice Activity 9.2
+set.seed(1957)
+
+music_man <- function(n_tromb, n_cor, n_reed){
+  
+  trombones <- rnorm(n_tromb, mean = 4.6, sd = .8)
+  cornets <- runif(n_cor, min = 1.5, max = 3.5)
+  reeds <- rchisq(n_reed, df = 4)
+  
+  return(sum(trombones, cornets, reeds))
+  
+}
+
+my_weights <- map_dbl(.x = 1:1000, 
+                      .f = ~ music_man(n_tromb = 76, n_cor = 110, n_reed = 1035)
+                      ) 
+
+sum(my_weights<4532)
 ```
 
 **DSM-2: I can fit a linear regression and extract necessary summary measures.**
@@ -694,17 +857,29 @@ avocado_clean_Q6 %>%
 
 ```{r dsm-2-1}
 
+# Lab 9 Modeling the Number of Allisons
+allison_lm <- lm(Count ~ Year, data = allison_f)
+broom::tidy(allison_lm)
 ```
 
 -   Example 2
 
 ```{r dsm-2-2}
 
+# Practice Activity 9
+my_model <- animal |>
+  lm(weight_after ~ weight_before, data = _)
+
+# plot residuals
+my_model |> 
+  broom::augment() |> 
+  ggplot(mapping = aes(y = .resid, x = .fitted)) +
+  geom_point()
 ```
 
 ## Revising My Thinking
 
-I have completed two revisions so far in the quarter and have tried to incorporate "lessons learned" as I work on successive assignments throughout the quarter. I incorporated feedback and updated the Challenge 4 plot so that it is now a Cleveland Dot Plot instead of a bar plot.
+I have completed multiple revisions throughout the quarter and have tried to incorporate "lessons learned" as I work on successive assignments throughout the quarter. I incorporated feedback and updated the Challenge 4 plot so that it is now a Cleveland Dot Plot instead of a bar plot.
 
 ## Extending My Thinking
 

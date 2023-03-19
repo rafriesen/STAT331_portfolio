@@ -3,3 +3,10 @@ title: "The Power of Efficiency"
 format: html
 editor: visual
 ---
+
+\
+In R, there is often multiple ways to do a given task. So programmers aim to try to find the more simple and elegant approach. The term efficiency means that there is as little repetition as possible in the code. Efficiency looks like writing functions, using iteration, and using modern tools (such as "across"). All of these strategies reduce repetition. Efficiency is important because it makes your code more readable, editable, and usable by others.
+
+I encountered efficiency when I learned how to write functions. I had a moment of comprehension when working on Lab 7 . When writing the rescaling function for this assignment, I realized that I should be writing functions instead of copying and pasting chunks of code for a side project that I am working on for a nonprofit. I wrote new functions for this side project and implemented what I was learning in class in a different context. I plan to write functions whenever I find myself copy, pasting, and editing the same chunks of code multiple times.
+
+Finally, I love using across. I found it challenging at first to understand how across was used in combination with mutate in Lab 3. But, when it clicked, I saw how potentially powerful it is to perform the same action on multiple columns in one fell-swoop, rather than calling a function multiple times. I particularly enjoyed across() in combination with where() to select multiple columns that meet a certain criteria. These skills will be incredibly useful as a start cleaning up a large data set for my research project.
