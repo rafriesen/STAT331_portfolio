@@ -23,7 +23,7 @@ execute:
 
 ```{r wd-1-csv}
 
-# Lab 5
+# Lab 5 Question 1
 surveys <- read_csv(here('labs', 'lab_5', 'surveys.csv'))
 ```
 
@@ -32,20 +32,18 @@ surveys <- read_csv(here('labs', 'lab_5', 'surveys.csv'))
 ```{r wd-1-xlsx}
 # Revised - switched to xlsx instead of read_excel()
 
-# Week 2 Practice Activity
+# Week 2 Question 4 Practice Activity
 read_xlsx("Ages_Data/ages.xlsx")
 ```
 
 -   `txt`
 
 ```{r wd-1-txt}
-# Week 2 Practice Activity
+# Week 2 Question 2 Practice Activity
 read_delim("Ages_Data/ages_tab.txt", delim = "\t")
 ```
 
 **WD-2: I can select necessary columns from a dataset.**
-
-Lab 3 Challenge
 
 ```{r wd-2}
 # Lab 3 Challenge
@@ -202,7 +200,7 @@ matrix_1984_fill <- file_1984_clean |>
 
 ```{r wd-5-inner}
 
-# Preview activity 11
+# Preview activity 4.3
 inner_join(prof_info, prof_course)
 ```
 
@@ -210,7 +208,7 @@ inner_join(prof_info, prof_course)
 
 ```{r wd-5-full}
 
-# Preview activity 11
+# Preview activity 4.3
 full_join(prof_info, prof_course)
 ```
 
@@ -866,7 +864,7 @@ broom::tidy(allison_lm)
 
 ```{r dsm-2-2}
 
-# Practice Activity 9
+# Practice Activity 9 Question 1
 my_model <- animal |>
   lm(weight_after ~ weight_before, data = _)
 
