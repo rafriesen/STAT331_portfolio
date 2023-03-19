@@ -819,7 +819,7 @@ avocado_clean_Q6 %>%
 
 ```{r dsm-1-1}
 
-# Practice Activity 9.2 
+# Practice Activity 9 Question 2
 fake_data <- tibble(
   weight = rnorm(n = 100, mean = 4.6, sd = .8)
 )
@@ -829,7 +829,7 @@ fake_data <- tibble(
 
 ```{r dsm-1-2}
 
-# Practice Activity 9.2
+# Practice Activity 9 Question 2
 set.seed(1957)
 
 music_man <- function(n_tromb, n_cor, n_reed){
