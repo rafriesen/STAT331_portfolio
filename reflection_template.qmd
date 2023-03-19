@@ -864,7 +864,7 @@ broom::tidy(allison_lm)
 
 ```{r dsm-2-2}
 
-# Practice Activity 9 Question 1
+# Practice Activity 9 Question  1
 my_model <- animal |>
   lm(weight_after ~ weight_before, data = _)
 
